@@ -1,0 +1,7 @@
+# Dependencies
+node_modules
+.next
+.turbo
+.env
+.env.local
+*.log
