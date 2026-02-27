@@ -1,0 +1,234 @@
+.product-detail {
+  padding-bottom: 2rem;
+}
+
+.product-detail__back {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  margin-bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.2s;
+}
+
+.product-detail__back:hover {
+  opacity: 0.85;
+}
+
+.product-detail__gallery {
+  margin-bottom: 1.5rem;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--gray-100);
+  border: 1px solid var(--border);
+}
+
+.product-detail__main-image {
+  aspect-ratio: 4/3;
+  overflow: hidden;
+}
+
+.product-detail__main-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-detail__thumbs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-x: auto;
+}
+
+.product-detail__thumb {
+  flex: 0 0 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  background: var(--white);
+  transition: border-color 0.2s, opacity 0.2s;
+}
+
+.product-detail__thumb:hover {
+  opacity: 0.9;
+}
+
+.product-detail__thumb--active {
+  border-color: var(--accent);
+}
+
+.product-detail__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-detail__info {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+}
+
+.product-detail__name {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.product-detail__price {
+  margin: 0 0 0.25rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.product-detail__unit {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.product-detail__stock {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.product-detail__description {
+  margin: 0 0 1.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.product-detail__quantity {
+  margin-bottom: 1.25rem;
+}
+
+.product-detail__quantity label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.product-detail__quantity-controls {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--input-bg);
+}
+
+.product-detail__quantity-controls button {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: var(--bg-hover);
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: background 0.2s;
+}
+
+.product-detail__quantity-controls button:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.product-detail__quantity-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.product-detail__quantity-controls input {
+  width: 56px;
+  height: 44px;
+  border: none;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--white);
+  color: var(--text-primary);
+}
+
+.product-detail__quantity-controls input:focus {
+  outline: none;
+}
+
+.product-detail__total {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: var(--gray-100);
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.product-detail__total strong {
+  font-size: 1.25rem;
+  color: var(--accent);
+}
+
+.product-detail__pay {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s, opacity 0.2s;
+  text-align: center;
+}
+
+.product-detail__pay:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.product-detail__pay:disabled {
+  background: var(--disabled);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+@media (min-width: 640px) {
+  .product-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .product-detail__back {
+    grid-column: 1 / -1;
+  }
+
+  .product-detail__gallery {
+    position: sticky;
+    top: 1rem;
+  }
+}
