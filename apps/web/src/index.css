@@ -1,8 +1,93 @@
-* {
+:root {
+  /* Verde como acento principal */
+  --accent: #16a34a;
+  --accent-hover: #15803d;
+  --accent-light: rgba(22, 163, 74, 0.12);
+
+  /* Negro para cabecera y énfasis */
+  --black: #0a0a0a;
+  --black-soft: #171717;
+
+  /* Grises para texto y fondos */
+  --gray-900: #171717;
+  --gray-700: #404040;
+  --gray-500: #737373;
+  --gray-400: #a3a3a3;
+  --gray-200: #e5e5e5;
+  --gray-100: #f5f5f5;
+
+  /* Blanco */
+  --white: #ffffff;
+
+  /* Uso en layout */
+  --bg: var(--gray-100);
+  --card-bg: var(--white);
+  --text-primary: var(--gray-900);
+  --text-muted: var(--gray-500);
+  --border: var(--gray-200);
+  --bg-hover: var(--gray-200);
+  --input-bg: var(--white);
+  --disabled: var(--gray-400);
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.app__header {
+  background: var(--black);
+  color: var(--white);
+  padding: 1rem 1.25rem;
+  box-shadow: var(--shadow);
+  border-bottom: 3px solid var(--accent);
+}
+
+.app__header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.app__main {
+  flex: 1;
+  padding: 1.25rem;
+  padding-bottom: 2rem;
+}
+
+@media (min-width: 768px) {
+  .app__main {
+    max-width: 720px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (min-width: 375px) {
+  .app__main {
+    padding: 1.5rem;
+  }
 }

@@ -1,0 +1,66 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  padding: 1rem;
+}
+
+.backdrop__panel {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: var(--shadow-hover);
+  border-top: 3px solid var(--accent);
+}
+
+.backdrop__title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.backdrop__summary {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: var(--bg-hover);
+  border-radius: 12px;
+}
+
+.backdrop__line {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.backdrop__product {
+  font-weight: 500;
+}
+
+.backdrop__total {
+  margin-top: 0.75rem !important;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.backdrop__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.backdrop__actions .btn {
+  flex: 1;
+  min-width: 120px;
+  max-width: 160px;
+  text-align: center;
+}

@@ -1,0 +1,134 @@
+.product-list__title {
+  margin: 0 0 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.product-list__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 480px) {
+  .product-list__grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+.product-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--accent);
+  overflow: hidden;
+}
+
+.product-card .product-card__content {
+  padding: 1rem 1.25rem 0;
+}
+
+.product-card__actions {
+  padding: 1rem 1.25rem 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-card .product-card__pay {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.product-card__content {
+  flex: 1;
+}
+
+.product-card__image-wrap {
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  background: var(--gray-100);
+  cursor: pointer;
+  margin: 0;
+}
+
+.product-card__image {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+}
+
+.product-card__name {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.product-card__description {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.product-card__price {
+  margin: 0 0 0.25rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.product-card__stock {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.product-card__pay {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease;
+  text-align: center;
+}
+
+.product-card__pay:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.product-card__pay:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.product-card__pay:disabled {
+  background: var(--disabled);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
