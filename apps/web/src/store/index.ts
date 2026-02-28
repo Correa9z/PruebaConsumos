@@ -133,6 +133,14 @@ const checkoutSlice = createSlice({
       state.wompiAcceptance = null;
       state.paymentMethodToken = null;
     },
+    /** Return to the same product detail page after payment result (keep selectedProduct). */
+    backToProductDetail(state) {
+      state.step = "detail";
+      state.paymentSuccess = null;
+      state.paymentError = null;
+      state.wompiAcceptance = null;
+      state.paymentMethodToken = null;
+    },
   },
 });
 
@@ -157,6 +165,7 @@ export const {
   setWompiAcceptance,
   setPaymentMethodToken,
   goToProducts,
+  backToProductDetail,
 } = checkoutSlice.actions;
 
 export const store = configureStore({ reducer: { checkout: checkoutSlice.reducer } });

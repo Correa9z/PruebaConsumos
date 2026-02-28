@@ -1,24 +1,37 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(15, 23, 42, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 1rem;
   overflow-y: auto;
+  animation: overlayIn 0.2s ease;
 }
 
 .modal {
   background: var(--card-bg);
-  border-radius: 16px;
+  border-radius: var(--radius-lg, 16px);
   width: 100%;
   max-width: 420px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: var(--shadow-hover);
   border-top: 3px solid var(--accent);
+  animation: modalIn 0.3s ease;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modal__header {
@@ -122,15 +135,19 @@
 
 .modal__checkbox {
   display: flex;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
   gap: 0.5rem;
   font-weight: 400;
   cursor: pointer;
 }
 
 .modal__checkbox input {
-  margin-top: 0.2rem;
+  margin: 0;
   width: auto;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
 }
 
 .modal__section label {

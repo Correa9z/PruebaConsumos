@@ -4,13 +4,13 @@ const API = "/api";
 
 export async function getProducts(): Promise<Product[]> {
   const res = await fetch(`${API}/products`);
-  if (!res.ok) throw new Error("Error al cargar productos");
+  if (!res.ok) throw new Error("Failed to load products");
   return res.json();
 }
 
 export async function getConfig(): Promise<Config> {
   const res = await fetch(`${API}/config`);
-  if (!res.ok) throw new Error("Error al cargar configuración");
+  if (!res.ok) throw new Error("Failed to load configuration");
   return res.json();
 }
 
@@ -25,7 +25,7 @@ export async function getWompiMerchant(): Promise<WompiMerchantResponse> {
   const res = await fetch(`${API}/wompi/merchant`);
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new Error((data as { error?: string }).error ?? "Error al cargar aceptación Wompi");
+    throw new Error((data as { error?: string }).error ?? "Failed to load Wompi acceptance");
   }
   return res.json();
 }
@@ -71,7 +71,7 @@ export async function tokenizeCard(
     throw new Error(String(msg));
   }
   const token = data.data?.id;
-  if (!token) throw new Error("No se recibió token de tarjeta");
+  if (!token) throw new Error("Card token not received");
   return token;
 }
 
@@ -130,7 +130,7 @@ export async function createPayment(
     const msg =
       typeof raw === "string"
         ? raw
-        : raw?.message ?? (raw as { reason?: string } | undefined)?.reason ?? "Error al crear el pago";
+        : raw?.message ?? (raw as { reason?: string } | undefined)?.reason ?? "Failed to create payment";
     throw new Error(msg);
   }
   return data;
@@ -175,7 +175,7 @@ export async function createPaymentLink(
     }),
   });
   const data = (await res.json()) as CreatePaymentLinkResponse & { error?: string };
-  if (!res.ok) throw new Error(data.error ?? "Error al crear el link de pago");
+  if (!res.ok) throw new Error(data.error ?? "Failed to create payment link");
   return data;
 }
 

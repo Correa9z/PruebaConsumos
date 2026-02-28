@@ -25,9 +25,9 @@ export function ProductDetail() {
         type="button"
         className="product-detail__back"
         onClick={() => dispatch(backToList())}
-        aria-label="Volver al listado"
+        aria-label="Back to list"
       >
-        ← Volver
+        ← Back
       </button>
 
       <div className="product-detail__gallery">
@@ -58,10 +58,10 @@ export function ProductDetail() {
       <div className="product-detail__info">
         <h1 className="product-detail__name">{selectedProduct.name}</h1>
         <p className="product-detail__price">
-          ${(selectedProduct.priceInCents / 100).toLocaleString("es-CO")} COP
-          <span className="product-detail__unit"> / unidad</span>
+          ${(selectedProduct.priceInCents / 100).toLocaleString("en-US")} COP
+          <span className="product-detail__unit"> / unit</span>
         </p>
-        <p className="product-detail__stock">Disponibles: {selectedProduct.stock}</p>
+        <p className="product-detail__stock">In stock: {selectedProduct.stock}</p>
         <p className="product-detail__description">{selectedProduct.description}</p>
 
         <div className="product-detail__quantity">
@@ -71,7 +71,7 @@ export function ProductDetail() {
               type="button"
               onClick={() => dispatch(setQuantity(selectedQuantity - 1))}
               disabled={selectedQuantity <= 1}
-              aria-label="Menos"
+              aria-label="Decrease"
             >
               −
             </button>
@@ -87,7 +87,7 @@ export function ProductDetail() {
               type="button"
               onClick={() => dispatch(setQuantity(selectedQuantity + 1))}
               disabled={selectedQuantity >= maxQty}
-              aria-label="Más"
+              aria-label="Increase"
             >
               +
             </button>
@@ -96,7 +96,7 @@ export function ProductDetail() {
 
         <div className="product-detail__total">
           <span>Total:</span>
-          <strong>${(subtotal / 100).toLocaleString("es-CO")} COP</strong>
+          <strong>${(subtotal / 100).toLocaleString("en-US")} COP</strong>
         </div>
 
         <button
@@ -105,7 +105,7 @@ export function ProductDetail() {
           onClick={() => dispatch(openModal())}
           disabled={selectedProduct.stock < 1}
         >
-          Pagar con tarjeta
+          Pay with credit card
         </button>
       </div>
     </article>

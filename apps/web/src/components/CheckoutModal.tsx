@@ -54,7 +54,7 @@ export function CheckoutModal() {
         }
       } catch (e) {
         if (!cancelled) {
-          setMerchantError(e instanceof Error ? e.message : "Error al cargar aceptación");
+          setMerchantError(e instanceof Error ? e.message : "Failed to load acceptance terms");
           dispatch(setWompiAcceptance(null));
         }
       } finally {
@@ -67,22 +67,21 @@ export function CheckoutModal() {
   const validate = (): boolean => {
     const e: Record<string, string> = {};
     // Tarjeta (datos falsos pero estructura válida según enunciado)
-    if (!card.number.trim()) e.cardNumber = "Número requerido";
-    else if (!luhnCheck(card.number)) e.cardNumber = "Número de tarjeta inválido";
-    if (!card.cvc.trim()) e.cvc = "CVC requerido";
-    else if (card.cvc.length < 3) e.cvc = "CVC inválido";
-    if (!card.expMonth || !card.expYear) e.exp = "Fecha de vencimiento requerida";
-    else if (card.expMonth.length !== 2 || card.expYear.length !== 2) e.exp = "Formato MM/AA";
-    if (!card.cardholderName.trim()) e.name = "Nombre en tarjeta requerido";
-    // Entrega
-    if (!customerEmail.trim()) e.email = "Email requerido";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) e.email = "Email inválido";
-    if (!customerFullName.trim()) e.fullName = "Nombre completo requerido";
-    if (!delivery.address.trim()) e.address = "Dirección requerida";
-    if (!delivery.city.trim()) e.city = "Ciudad requerida";
-    if (!delivery.phone.trim()) e.phone = "Teléfono requerido";
-    if (permalinkPolicy && !acceptedPolicy) e.acceptPolicy = "Debes aceptar los términos y condiciones";
-    if (permalinkPersonalData && !acceptedPersonalData) e.acceptPersonal = "Debes aceptar el tratamiento de datos personales";
+    if (!card.number.trim()) e.cardNumber = "Card number required";
+    else if (!luhnCheck(card.number)) e.cardNumber = "Invalid card number";
+    if (!card.cvc.trim()) e.cvc = "CVC required";
+    else if (card.cvc.length < 3) e.cvc = "Invalid CVC";
+    if (!card.expMonth || !card.expYear) e.exp = "Expiry date required";
+    else if (card.expMonth.length !== 2 || card.expYear.length !== 2) e.exp = "Format MM/YY";
+    if (!card.cardholderName.trim()) e.name = "Cardholder name required";
+    if (!customerEmail.trim()) e.email = "Email required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) e.email = "Invalid email";
+    if (!customerFullName.trim()) e.fullName = "Full name required";
+    if (!delivery.address.trim()) e.address = "Address required";
+    if (!delivery.city.trim()) e.city = "City required";
+    if (!delivery.phone.trim()) e.phone = "Phone required";
+    if (permalinkPolicy && !acceptedPolicy) e.acceptPolicy = "You must accept the terms and conditions";
+    if (permalinkPersonalData && !acceptedPersonalData) e.acceptPersonal = "You must accept the personal data policy";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -98,31 +97,31 @@ export function CheckoutModal() {
     <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <div className="modal">
         <div className="modal__header">
-          <h2 id="modal-title">Datos de pago y entrega</h2>
+          <h2 id="modal-title">Payment and delivery</h2>
           <button
             type="button"
             className="modal__close"
             onClick={() => dispatch(closeModal())}
-            aria-label="Cerrar"
+            aria-label="Close"
           >
             ×
           </button>
         </div>
         <form onSubmit={handleSubmit} className="modal__form">
           <fieldset className="modal__section">
-            <legend>Tarjeta</legend>
+            <legend>Card</legend>
             {merchantError && (
               <p className="form-error modal__merchant-error">
-                {merchantError}. Términos no disponibles; puedes continuar sin aceptación.
+                {merchantError}. Terms unavailable; you may continue without acceptance.
               </p>
             )}
-            {merchantLoading && <p className="modal__loading">Cargando pasarela…</p>}
+            {merchantLoading && <p className="modal__loading">Loading payment gateway…</p>}
             <div className="modal__card-logos">
               <span className={`card-logo card-logo--visa ${cardType === "visa" ? "card-logo--active" : ""}`}>VISA</span>
               <span className={`card-logo card-logo--mc ${cardType === "mastercard" ? "card-logo--active" : ""}`}>Mastercard</span>
             </div>
             <label>
-              Número de tarjeta
+              Card number
               <input
                 type="text"
                 inputMode="numeric"
@@ -135,7 +134,7 @@ export function CheckoutModal() {
             </label>
             <div className="modal__row">
               <label>
-                Vencimiento (MM/AA)
+                Expiry (MM/YY)
                 <input
                   type="text"
                   inputMode="numeric"
@@ -169,10 +168,10 @@ export function CheckoutModal() {
               </label>
             </div>
             <label>
-              Nombre en la tarjeta
+              Cardholder name
               <input
                 type="text"
-                placeholder="Como aparece en la tarjeta"
+                placeholder="As shown on card"
                 value={card.cardholderName}
                 onChange={(e) => dispatch(setCard({ cardholderName: e.target.value }))}
                 className={errors.name ? "input--error" : ""}
@@ -189,9 +188,9 @@ export function CheckoutModal() {
                       onChange={(e) => setAcceptedPolicy(e.target.checked)}
                     />
                     <span>
-                      Acepto los{" "}
+                      I accept the{" "}
                       <a href={permalinkPolicy} target="_blank" rel="noopener noreferrer">
-                        términos y condiciones
+                        terms and conditions
                       </a>
                     </span>
                   </label>
@@ -204,9 +203,9 @@ export function CheckoutModal() {
                       onChange={(e) => setAcceptedPersonalData(e.target.checked)}
                     />
                     <span>
-                      Acepto el{" "}
+                      I accept the{" "}
                       <a href={permalinkPersonalData} target="_blank" rel="noopener noreferrer">
-                        tratamiento de datos personales
+                        personal data policy
                       </a>
                     </span>
                   </label>
@@ -217,13 +216,13 @@ export function CheckoutModal() {
             )}
           </fieldset>
           <fieldset className="modal__section">
-            <legend>Entrega</legend>
-            <p className="modal__hint">El pago se completará en la página segura de Wompi tras el resumen.</p>
+            <legend>Delivery</legend>
+            <p className="modal__hint">Payment will be completed on the secure Wompi page after the summary.</p>
             <label>
               Email
               <input
                 type="email"
-                placeholder="tu@email.com"
+                placeholder="you@email.com"
                 value={customerEmail}
                 onChange={(e) => dispatch(setCustomer({ email: e.target.value, fullName: customerFullName }))}
                 className={errors.email ? "input--error" : ""}
@@ -231,10 +230,10 @@ export function CheckoutModal() {
               {errors.email && <span className="form-error">{errors.email}</span>}
             </label>
             <label>
-              Nombre completo
+              Full name
               <input
                 type="text"
-                placeholder="Nombre completo"
+                placeholder="Full name"
                 value={customerFullName}
                 onChange={(e) => dispatch(setCustomer({ email: customerEmail, fullName: e.target.value }))}
                 className={errors.fullName ? "input--error" : ""}
@@ -242,10 +241,10 @@ export function CheckoutModal() {
               {errors.fullName && <span className="form-error">{errors.fullName}</span>}
             </label>
             <label>
-              Dirección
+              Address
               <input
                 type="text"
-                placeholder="Calle, número"
+                placeholder="Street, number"
                 value={delivery.address}
                 onChange={(e) => dispatch(setDelivery({ address: e.target.value }))}
                 className={errors.address ? "input--error" : ""}
@@ -254,10 +253,10 @@ export function CheckoutModal() {
             </label>
             <div className="modal__row">
               <label>
-                Ciudad
+                City
                 <input
                   type="text"
-                  placeholder="Ciudad"
+                  placeholder="City"
                   value={delivery.city}
                   onChange={(e) => dispatch(setDelivery({ city: e.target.value }))}
                   className={errors.city ? "input--error" : ""}
@@ -265,10 +264,10 @@ export function CheckoutModal() {
                 {errors.city && <span className="form-error">{errors.city}</span>}
               </label>
               <label>
-                Teléfono
+                Phone
                 <input
                   type="tel"
-                  placeholder="Teléfono"
+                  placeholder="Phone"
                   value={delivery.phone}
                   onChange={(e) => dispatch(setDelivery({ phone: e.target.value }))}
                   className={errors.phone ? "input--error" : ""}
@@ -279,10 +278,10 @@ export function CheckoutModal() {
           </fieldset>
           <div className="modal__actions">
             <button type="button" className="btn btn--secondary" onClick={() => dispatch(closeModal())}>
-              Cancelar
+              Cancel
             </button>
             <button type="submit" className="btn btn--primary" disabled={merchantLoading}>
-              {merchantLoading ? "Cargando…" : "Continuar al resumen"}
+              {merchantLoading ? "Loading…" : "Continue to summary"}
             </button>
           </div>
         </form>

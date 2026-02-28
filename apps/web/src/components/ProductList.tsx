@@ -12,7 +12,7 @@ export function ProductList() {
 
   return (
     <section className="product-list">
-      <h2 className="product-list__title">Productos</h2>
+      <h2 className="product-list__title">Products</h2>
       <ul className="product-list__grid">
         {products.map((p) => (
           <li key={p.id} className="product-card">
@@ -33,9 +33,9 @@ export function ProductList() {
               <h3 className="product-card__name">{p.name}</h3>
               <p className="product-card__description">{p.description}</p>
               <p className="product-card__price">
-                ${(p.priceInCents / 100).toLocaleString("es-CO")} COP
+                ${(p.priceInCents / 100).toLocaleString("en-US")} COP
               </p>
-              <p className="product-card__stock">Disponibles: {p.stock}</p>
+              <p className="product-card__stock">In stock: {p.stock}</p>
             </div>
             <div className="product-card__actions">
               <button
@@ -44,7 +44,7 @@ export function ProductList() {
                 onClick={() => dispatch(openProductDetail(p))}
                 disabled={p.stock < 1}
               >
-                Ver más
+                View details
               </button>
             </div>
           </li>

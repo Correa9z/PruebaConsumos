@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setProducts, setConfig, setProductsLoading, setProductsError } from "@/store";
+import { setProducts, setConfig, setProductsLoading, setProductsError, openProductDetail } from "@/store";
 import { getProducts, getConfig } from "@/api/client";
 import { ProductList } from "@/components/ProductList";
 import { ProductDetail } from "@/components/ProductDetail";
@@ -34,17 +34,33 @@ function App() {
         }
       } catch (e) {
         if (!cancelled)
-          dispatch(setProductsError(e instanceof Error ? e.message : "Error al cargar"));
+          dispatch(setProductsError(e instanceof Error ? e.message : "Failed to load"));
       }
     })();
     return () => { cancelled = true; };
   }, [dispatch, isResultadoPago]);
 
+  // Open product detail when returning from result page with ?productId=xxx
+  useEffect(() => {
+    if (isResultadoPago || productsLoading || products.length === 0) return;
+    const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const productId = params?.get("productId");
+    if (!productId) return;
+    const product = products.find((p) => p.id === productId);
+    if (product) {
+      dispatch(openProductDetail(product));
+      window.history.replaceState({}, "", window.location.pathname || "/");
+    }
+  }, [isResultadoPago, productsLoading, products, dispatch]);
+
   if (isResultadoPago) {
     return (
       <ResultadoPagoPage
         searchString={typeof window !== "undefined" ? window.location.search : ""}
-        onBack={() => { window.location.href = "/"; }}
+        onBack={(productId) => {
+          const url = productId ? `/?productId=${encodeURIComponent(productId)}` : "/";
+          window.location.href = url;
+        }}
       />
     );
   }
@@ -52,10 +68,10 @@ function App() {
   return (
     <div className="app">
       <header className="app__header">
-        <h1>Tienda</h1>
+        <h1>Store</h1>
       </header>
       <main className="app__main">
-        {productsLoading && <p className="app__loading">Cargando productos…</p>}
+        {productsLoading && <p className="app__loading">Loading products…</p>}
         {productsError && <p className="app__error">{productsError}</p>}
         {!productsLoading && !productsError && products.length > 0 && step === "list" && <ProductList />}
         {step === "detail" && <ProductDetail />}
