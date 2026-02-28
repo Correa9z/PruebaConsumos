@@ -1,6 +1,6 @@
 @echo off
 echo ================================================
-echo   WompiTest - Tunel ngrok para Backend
+echo   Store - Tunel ngrok para Backend
 echo ================================================
 echo.
 echo Expone el backend (puerto 3001) para recibir:

@@ -54,7 +54,7 @@ export const paymentProviderAdapter: IPaymentProvider = {
                 ? String((err as { message?: string }).message)
                 : rawText && rawText.length < 500
                   ? rawText
-                  : `Wompi error ${res.status}`;
+                  : `Payment provider error ${res.status}`;
         return { ok: false, error: msg };
       }
       const id = data.data?.id;
@@ -89,7 +89,7 @@ export const paymentProviderAdapter: IPaymentProvider = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${PRIVATE_KEY}`,
-          "User-Agent": "WompiTest/1.0",
+          "User-Agent": "Store/1.0",
         },
         body: JSON.stringify(body),
       });
@@ -109,7 +109,7 @@ export const paymentProviderAdapter: IPaymentProvider = {
               ? String((err as { reason?: string }).reason)
               : rawText && rawText.length < 500
                 ? rawText
-                : `Wompi payment link error ${res.status}`;
+                : `Payment link error ${res.status}`;
         return { ok: false, error: msg };
       }
       const linkId = data.data?.id;
