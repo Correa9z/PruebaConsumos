@@ -36,7 +36,7 @@ describe("checkout slice", () => {
   });
 
   it("setConfig sets config", () => {
-    const config = { baseFeeInCents: 500, deliveryFeeInCents: 1500, wompiPublicKey: null, wompiBaseUrl: null };
+    const config = { baseFeeInCents: 500, deliveryFeeInCents: 1500, wompiPublicKey: undefined, wompiBaseUrl: undefined };
     const state = reducer(initialState, setConfig(config));
     expect(state.config).toEqual(config);
   });
@@ -160,7 +160,7 @@ describe("checkout slice", () => {
     const success = reducer(withQty, setPaymentSuccess(true));
     const next = reducer(success, goToProducts());
     expect(next.step).toBe("list");
-    expect(next.products[0].stock).toBe(7);
+    expect(next.products[0]?.stock).toBe(7);
   });
 
   it("goToProducts resets without updating stock when paymentSuccess is false", () => {
@@ -171,7 +171,7 @@ describe("checkout slice", () => {
     const withError = reducer(selected, setPaymentError("Failed"));
     const next = reducer(withError, goToProducts());
     expect(next.step).toBe("list");
-    expect(next.products[0].stock).toBe(10);
+    expect(next.products[0]?.stock).toBe(10);
   });
 
   it("backToProductDetail returns to detail step and clears payment state", () => {

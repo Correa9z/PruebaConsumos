@@ -1,17 +1,45 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: prueba-postgres
+    container_name: store-postgres
     pull_policy: always
     restart: unless-stopped
     environment:
       POSTGRES_USER: prueba
       POSTGRES_PASSWORD: prueba
       POSTGRES_DB: prueba
+    
     ports:
       - "5432:5432"
-    # volumes:
-    #   - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U prueba -d prueba"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-# volumes:
-#   postgres_data:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+      no_cache: true
+    container_name: store-api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://prueba:prueba@postgres:5432/prueba
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      no_cache: true
+    container_name: store-web
+    restart: unless-stopped
+    ports:
+      
+      - "8080:80"
+    depends_on:
+      - api

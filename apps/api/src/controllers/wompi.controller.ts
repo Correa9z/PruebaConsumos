@@ -9,7 +9,7 @@ export class WompiController {
   async getMerchant() {
     if (!PUBLIC_KEY || !BASE_URL) {
       throw new HttpException(
-        { error: "Wompi not configured (PAYMENT_PUBLIC_KEY / PAYMENT_BASE_URL)" },
+        { error: "Payment provider not configured (PAYMENT_PUBLIC_KEY / PAYMENT_BASE_URL)" },
         HttpStatus.SERVICE_UNAVAILABLE,
       );
     }

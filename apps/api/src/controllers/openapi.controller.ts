@@ -5,7 +5,7 @@ const openApiSpec = {
   info: {
     title: "API Prueba",
     description:
-      "API para listar productos, crear pagos y recibir webhooks del proveedor de pagos (Wompi).",
+      "API para listar productos, crear pagos y recibir webhooks del proveedor de pagos.",
     version: "0.0.1",
   },
   servers: [{ url: "/api", description: "API base" }],
@@ -40,7 +40,7 @@ const openApiSpec = {
     },
     "/webhooks/payment": {
       post: {
-        summary: "Webhook de pago (Wompi)",
+        summary: "Webhook de pago",
         operationId: "webhookPayment",
         responses: { "200": { description: "Evento procesado" } },
       },

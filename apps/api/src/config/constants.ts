@@ -29,7 +29,7 @@ export function getRedirectBaseUrl(): string {
   return (typeof u === "string" && u.trim()) ? u.trim() : "http://localhost:3000";
 }
 
-/** URL base pública del backend para el redirect_url de Wompi. Debe ser absoluta y válida. */
+/** URL base pública del backend para el redirect_url del proveedor de pagos. Debe ser absoluta y válida. */
 export function getPaymentRedirectBaseUrl(): string {
   const u = process.env.PAYMENT_REDIRECT_URL?.trim();
   if (u && u.length > 0) return u;

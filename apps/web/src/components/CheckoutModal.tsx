@@ -217,7 +217,7 @@ export function CheckoutModal() {
           </fieldset>
           <fieldset className="modal__section">
             <legend>Delivery</legend>
-            <p className="modal__hint">Payment will be completed on the secure Wompi page after the summary.</p>
+            <p className="modal__hint">Payment will be completed on the secure payment page after the summary.</p>
             <label>
               Email
               <input
