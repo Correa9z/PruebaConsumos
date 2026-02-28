@@ -54,6 +54,7 @@ model Transaction {
   totalInCents       Int      @map("total_in_cents")
   status             String   @default("PENDING")
   providerTransactionId String? @map("provider_transaction_id")
+  wompiPaymentLinkId String?  @unique @map("wompi_payment_link_id")
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @updatedAt @map("updated_at")
 }

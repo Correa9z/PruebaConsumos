@@ -47,6 +47,7 @@ function mapTransaction(t: {
   totalInCents: number;
   status: string;
   providerTransactionId: string | null;
+  wompiPaymentLinkId?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }): TransactionEntity {
@@ -63,6 +64,7 @@ function mapTransaction(t: {
     totalInCents: t.totalInCents,
     status: t.status as TransactionEntity["status"],
     providerTransactionId: t.providerTransactionId,
+    wompiPaymentLinkId: t.wompiPaymentLinkId ?? null,
     createdAt: t.createdAt,
     updatedAt: t.updatedAt,
   };
@@ -130,6 +132,19 @@ export const transactionRepository: ITransactionRepository = {
     const t = await prisma.transaction.update({
       where: { id },
       data: { providerTransactionId },
+    });
+    return mapTransaction(t);
+  },
+  async findByWompiPaymentLinkId(wompiPaymentLinkId: string) {
+    const t = await prisma.transaction.findFirst({
+      where: { wompiPaymentLinkId } as object,
+    });
+    return t ? mapTransaction(t) : null;
+  },
+  async updateWompiPaymentLinkId(id, wompiPaymentLinkId) {
+    const t = await prisma.transaction.update({
+      where: { id },
+      data: { wompiPaymentLinkId } as object,
     });
     return mapTransaction(t);
   },

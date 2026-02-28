@@ -16,7 +16,7 @@ const PRODUCTS = [
   {
     name: "Camiseta Básica",
     description: "Camiseta en algodón 100%, cómoda y fresca. Talla única, corte regular.",
-    priceInCents: 25000,
+    priceInCents: 2500000,
     stock: 10,
     imageUrls: [
       img("1603113730470-780cbb2f32ca"), // camiseta blanca
@@ -27,7 +27,7 @@ const PRODUCTS = [
   {
     name: "Pantalón Jean",
     description: "Jean clásico azul de corte recto. Tela resistente y cómoda.",
-    priceInCents: 85000,
+    priceInCents: 8500000,
     stock: 5,
     imageUrls: [
       img("1541099649105-f68ad6f294f8"), // jeans
@@ -37,7 +37,7 @@ const PRODUCTS = [
   {
     name: "Zapatos Deportivos",
     description: "Calzado running ligero, suela antideslizante y amortiguación.",
-    priceInCents: 120000,
+    priceInCents: 12000000,
     stock: 8,
     imageUrls: [
       img("1542291026-7eec264c27ff"), // sneakers
@@ -48,7 +48,7 @@ const PRODUCTS = [
   {
     name: "Bolso Tote",
     description: "Bolso tote en tela resistente, ideal para el día a día.",
-    priceInCents: 45000,
+    priceInCents: 4500000,
     stock: 12,
     imageUrls: [
       img("1584917865442-de89df76afd3"), // tote
@@ -58,7 +58,7 @@ const PRODUCTS = [
   {
     name: "Gorra",
     description: "Gorra ajustable, unicolor. Visera recta y cierre trasero.",
-    priceInCents: 18000,
+    priceInCents: 1800000,
     stock: 20,
     imageUrls: [
       img("1588850561407-ed78c282e89b"), // gorra

@@ -49,6 +49,7 @@ CREATE TABLE "Transaction" (
     "total_in_cents" INTEGER NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'PENDING',
     "provider_transaction_id" TEXT,
+    "wompi_payment_link_id" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
@@ -60,6 +61,9 @@ CREATE UNIQUE INDEX "Customer_email_key" ON "Customer"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Transaction_transaction_number_key" ON "Transaction"("transaction_number");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Transaction_wompi_payment_link_id_key" ON "Transaction"("wompi_payment_link_id");
 
 -- AddForeignKey
 ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "Product"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

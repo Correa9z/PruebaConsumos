@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createPayment } from "@/application/use-cases/create-payment";
+import { createPaymentLink } from "@/application/use-cases/create-payment-link";
 import {
   productRepository,
   transactionRepository,
@@ -7,12 +7,7 @@ import {
   deliveryRepository,
   paymentProviderAdapter,
 } from "@/infrastructure";
-import {
-  getBaseFeeCents,
-  getDeliveryFeeCents,
-  buildSignature,
-  generateTransactionNumber,
-} from "@/config/constants";
+import { getBaseFeeCents, getDeliveryFeeCents, generateTransactionNumber, getRedirectBaseUrl, getPaymentRedirectBaseUrl } from "@/config/constants";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +22,6 @@ export async function POST(request: NextRequest) {
   const b = body as {
     productId?: string;
     quantity?: number;
-    amountInCents?: number;
     baseFeeInCents?: number;
     deliveryFeeInCents?: number;
     customerEmail?: string;
@@ -39,41 +33,41 @@ export async function POST(request: NextRequest) {
       phone?: string;
       postalCode?: string;
     };
-    acceptanceToken?: string;
-    acceptPersonalAuth?: string;
-    paymentMethodToken?: string;
   };
 
   if (
     !b.productId ||
     typeof b.quantity !== "number" ||
     b.quantity < 1 ||
-    typeof b.amountInCents !== "number" ||
     !b.customerEmail ||
     !b.customerFullName ||
     !b.delivery?.address ||
     !b.delivery?.city ||
-    !b.delivery?.phone ||
-    !b.acceptanceToken ||
-    !b.paymentMethodToken
+    !b.delivery?.phone
   ) {
     return NextResponse.json(
       {
         error:
-          "Missing required fields: productId, quantity, amountInCents, customerEmail, customerFullName, delivery (address, city, phone), acceptanceToken, paymentMethodToken",
+          "Missing required fields: productId, quantity, customerEmail, customerFullName, delivery (address, city, phone)",
       },
       { status: 400 }
     );
   }
 
+  const product = await productRepository.findById(b.productId);
+  if (!product) {
+    return NextResponse.json({ error: "Product not found" }, { status: 404 });
+  }
+
+  const amountInCents = product.priceInCents * b.quantity;
   const baseFee = b.baseFeeInCents ?? getBaseFeeCents();
   const deliveryFee = b.deliveryFeeInCents ?? getDeliveryFeeCents();
 
-  const result = await createPayment(
+  const result = await createPaymentLink(
     {
       productId: b.productId,
       quantity: b.quantity,
-      amountInCents: b.amountInCents,
+      amountInCents,
       baseFeeInCents: baseFee,
       deliveryFeeInCents: deliveryFee,
       customerEmail: b.customerEmail,
@@ -85,9 +79,6 @@ export async function POST(request: NextRequest) {
         phone: b.delivery.phone,
         postalCode: b.delivery.postalCode,
       },
-      acceptanceToken: b.acceptanceToken,
-      acceptPersonalAuth: b.acceptPersonalAuth,
-      paymentMethodToken: b.paymentMethodToken,
     },
     {
       productRepo: productRepository,
@@ -96,7 +87,8 @@ export async function POST(request: NextRequest) {
       deliveryRepo: deliveryRepository,
       paymentProvider: paymentProviderAdapter,
       generateTransactionNumber,
-      buildSignature,
+      getRedirectBaseUrl,
+      getPaymentRedirectBaseUrl,
     }
   );
 
@@ -105,11 +97,8 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({
-    transactionNumber: result.data.transaction.transactionNumber,
     transactionId: result.data.transaction.id,
-    status: result.data.transaction.status,
-    totalInCents: result.data.transaction.totalInCents,
-    quantity: result.data.transaction.quantity,
-    providerTransactionId: result.data.providerTransactionId,
+    transactionNumber: result.data.transactionNumber,
+    paymentLinkUrl: result.data.paymentLinkUrl,
   });
 }

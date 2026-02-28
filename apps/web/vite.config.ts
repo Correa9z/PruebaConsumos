@@ -13,6 +13,13 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:3001",
         changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on("error", (err, _req, _res) => {
+            if ((err as NodeJS.ErrnoException).code === "ECONNREFUSED") {
+              console.warn("[Vite] El backend no está disponible. Inicia el API con: cd apps/api && npm run dev");
+            }
+          });
+        },
       },
     },
   },

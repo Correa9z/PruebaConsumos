@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   closeModal,
@@ -6,7 +6,9 @@ import {
   setCard,
   setDelivery,
   setCustomer,
+  setWompiAcceptance,
 } from "@/store";
+import { getWompiMerchant } from "@/api/client";
 import {
   luhnCheck,
   detectCardType,
@@ -22,10 +24,49 @@ export function CheckoutModal() {
     (s: import("@/store").RootState) => s.checkout
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [acceptedPolicy, setAcceptedPolicy] = useState(false);
+  const [acceptedPersonalData, setAcceptedPersonalData] = useState(false);
+  const [merchantLoading, setMerchantLoading] = useState(true);
+  const [merchantError, setMerchantError] = useState<string | null>(null);
+  const [permalinkPolicy, setPermalinkPolicy] = useState<string | null>(null);
+  const [permalinkPersonalData, setPermalinkPersonalData] = useState<string | null>(null);
   const cardType = detectCardType(card.number);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setMerchantLoading(true);
+      setMerchantError(null);
+      try {
+        const data = await getWompiMerchant();
+        if (cancelled) return;
+        if (data.acceptanceToken && data.acceptPersonalAuth) {
+          dispatch(
+            setWompiAcceptance({
+              acceptanceToken: data.acceptanceToken,
+              acceptPersonalAuth: data.acceptPersonalAuth,
+            })
+          );
+          setPermalinkPolicy(data.permalinkPolicy ?? null);
+          setPermalinkPersonalData(data.permalinkPersonalData ?? null);
+        } else {
+          dispatch(setWompiAcceptance(null));
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setMerchantError(e instanceof Error ? e.message : "Error al cargar aceptación");
+          dispatch(setWompiAcceptance(null));
+        }
+      } finally {
+        if (!cancelled) setMerchantLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [dispatch]);
 
   const validate = (): boolean => {
     const e: Record<string, string> = {};
+    // Tarjeta (datos falsos pero estructura válida según enunciado)
     if (!card.number.trim()) e.cardNumber = "Número requerido";
     else if (!luhnCheck(card.number)) e.cardNumber = "Número de tarjeta inválido";
     if (!card.cvc.trim()) e.cvc = "CVC requerido";
@@ -33,12 +74,15 @@ export function CheckoutModal() {
     if (!card.expMonth || !card.expYear) e.exp = "Fecha de vencimiento requerida";
     else if (card.expMonth.length !== 2 || card.expYear.length !== 2) e.exp = "Formato MM/AA";
     if (!card.cardholderName.trim()) e.name = "Nombre en tarjeta requerido";
+    // Entrega
     if (!customerEmail.trim()) e.email = "Email requerido";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) e.email = "Email inválido";
     if (!customerFullName.trim()) e.fullName = "Nombre completo requerido";
     if (!delivery.address.trim()) e.address = "Dirección requerida";
     if (!delivery.city.trim()) e.city = "Ciudad requerida";
     if (!delivery.phone.trim()) e.phone = "Teléfono requerido";
+    if (permalinkPolicy && !acceptedPolicy) e.acceptPolicy = "Debes aceptar los términos y condiciones";
+    if (permalinkPersonalData && !acceptedPersonalData) e.acceptPersonal = "Debes aceptar el tratamiento de datos personales";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -67,6 +111,12 @@ export function CheckoutModal() {
         <form onSubmit={handleSubmit} className="modal__form">
           <fieldset className="modal__section">
             <legend>Tarjeta</legend>
+            {merchantError && (
+              <p className="form-error modal__merchant-error">
+                {merchantError}. Términos no disponibles; puedes continuar sin aceptación.
+              </p>
+            )}
+            {merchantLoading && <p className="modal__loading">Cargando pasarela…</p>}
             <div className="modal__card-logos">
               <span className={`card-logo card-logo--visa ${cardType === "visa" ? "card-logo--active" : ""}`}>VISA</span>
               <span className={`card-logo card-logo--mc ${cardType === "mastercard" ? "card-logo--active" : ""}`}>Mastercard</span>
@@ -88,8 +138,14 @@ export function CheckoutModal() {
                 Vencimiento (MM/AA)
                 <input
                   type="text"
+                  inputMode="numeric"
                   placeholder="MM/AA"
-                  value={card.expMonth && card.expYear ? `${card.expMonth}/${card.expYear}` : ""}
+                  autoComplete="cc-exp"
+                  value={
+                    card.expMonth.length === 2
+                      ? `${card.expMonth}/${card.expYear}`
+                      : card.expMonth
+                  }
                   onChange={(e) => {
                     const f = formatExpiry(e.target.value);
                     const [mm, yy] = f.split("/");
@@ -123,9 +179,46 @@ export function CheckoutModal() {
               />
               {errors.name && <span className="form-error">{errors.name}</span>}
             </label>
+            {(permalinkPolicy || permalinkPersonalData) && (
+              <div className="modal__acceptance">
+                {permalinkPolicy && (
+                  <label className="modal__checkbox">
+                    <input
+                      type="checkbox"
+                      checked={acceptedPolicy}
+                      onChange={(e) => setAcceptedPolicy(e.target.checked)}
+                    />
+                    <span>
+                      Acepto los{" "}
+                      <a href={permalinkPolicy} target="_blank" rel="noopener noreferrer">
+                        términos y condiciones
+                      </a>
+                    </span>
+                  </label>
+                )}
+                {permalinkPersonalData && (
+                  <label className="modal__checkbox">
+                    <input
+                      type="checkbox"
+                      checked={acceptedPersonalData}
+                      onChange={(e) => setAcceptedPersonalData(e.target.checked)}
+                    />
+                    <span>
+                      Acepto el{" "}
+                      <a href={permalinkPersonalData} target="_blank" rel="noopener noreferrer">
+                        tratamiento de datos personales
+                      </a>
+                    </span>
+                  </label>
+                )}
+                {errors.acceptPolicy && <span className="form-error">{errors.acceptPolicy}</span>}
+                {errors.acceptPersonal && <span className="form-error">{errors.acceptPersonal}</span>}
+              </div>
+            )}
           </fieldset>
           <fieldset className="modal__section">
             <legend>Entrega</legend>
+            <p className="modal__hint">El pago se completará en la página segura de Wompi tras el resumen.</p>
             <label>
               Email
               <input
@@ -188,8 +281,8 @@ export function CheckoutModal() {
             <button type="button" className="btn btn--secondary" onClick={() => dispatch(closeModal())}>
               Cancelar
             </button>
-            <button type="submit" className="btn btn--primary">
-              Continuar al resumen
+            <button type="submit" className="btn btn--primary" disabled={merchantLoading}>
+              {merchantLoading ? "Cargando…" : "Continuar al resumen"}
             </button>
           </div>
         </form>

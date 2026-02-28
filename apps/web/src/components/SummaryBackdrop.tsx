@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPaymentSuccess, backToModal } from "@/store";
+import { setPaymentError, backToModal } from "@/store";
+import { createPaymentLink } from "@/api/client";
 import "./SummaryBackdrop.css";
 
 export function SummaryBackdrop() {
   const dispatch = useDispatch();
-  const { selectedProduct, selectedQuantity, config } = useSelector(
-    (s: import("@/store").RootState) => s.checkout
-  );
+  const {
+    selectedProduct,
+    selectedQuantity,
+    config,
+    delivery,
+    customerEmail,
+    customerFullName,
+  } = useSelector((s: import("@/store").RootState) => s.checkout);
   const [loading, setLoading] = useState(false);
 
   if (!selectedProduct || !config) return null;
@@ -17,11 +23,47 @@ export function SummaryBackdrop() {
   const productAmount = selectedProduct.priceInCents * selectedQuantity;
   const total = productAmount + baseFee + deliveryFee;
 
+  const canPay = Boolean(
+    customerEmail &&
+      customerFullName &&
+      delivery.address &&
+      delivery.city &&
+      delivery.phone
+  );
+
   const handlePay = async () => {
+    if (!canPay) return;
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    dispatch(setPaymentSuccess(true));
+    try {
+      const { paymentLinkUrl } = await createPaymentLink({
+        productId: selectedProduct.id,
+        quantity: selectedQuantity,
+        baseFeeInCents: baseFee,
+        deliveryFeeInCents: deliveryFee,
+        customerEmail,
+        customerFullName,
+        delivery: {
+          address: delivery.address,
+          city: delivery.city,
+          region: delivery.region || undefined,
+          phone: delivery.phone,
+          postalCode: delivery.postalCode || undefined,
+        },
+      });
+      window.location.href = paymentLinkUrl;
+    } catch (e) {
+      const message =
+        e instanceof Error
+          ? e.message
+          : typeof e === "string"
+            ? e
+            : e && typeof e === "object" && "message" in e
+              ? String((e as { message: unknown }).message)
+              : "Error al generar el link de pago";
+      dispatch(setPaymentError(message));
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,9 +93,9 @@ export function SummaryBackdrop() {
             type="button"
             className="btn btn--primary"
             onClick={handlePay}
-            disabled={loading}
+            disabled={loading || !canPay}
           >
-            {loading ? "Procesando..." : "Pagar"}
+            {loading ? "Redirigiendo a Wompi..." : canPay ? "Pagar" : "Completa los datos de entrega"}
           </button>
         </div>
       </div>

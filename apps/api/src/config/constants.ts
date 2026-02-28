@@ -23,3 +23,12 @@ export function generateTransactionNumber(): string {
   const r = Math.random().toString(36).slice(2, 8).toUpperCase();
   return `TXN-${t}-${r}`;
 }
+
+export function getRedirectBaseUrl(): string {
+  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+}
+
+/** URL base pública del backend para el redirect_url de Wompi. */
+export function getPaymentRedirectBaseUrl(): string {
+  return process.env.PAYMENT_REDIRECT_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+}

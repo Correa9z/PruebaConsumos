@@ -13,10 +13,13 @@ export async function POST(request: NextRequest) {
   }
 
   const event = body as {
-    data?: { transaction?: { id?: string; status?: string } };
+    data?: {
+      transaction?: { id?: string; status?: string; reference?: string };
+    };
   };
   const providerId = event.data?.transaction?.id;
   const status = event.data?.transaction?.status;
+  const reference = event.data?.transaction?.reference;
 
   if (!providerId || !status) {
     return NextResponse.json(
@@ -37,7 +40,8 @@ export async function POST(request: NextRequest) {
   const result = await updateTransactionFromWebhook(
     providerId,
     statusUpper as "APPROVED" | "DECLINED" | "ERROR",
-    { transactionRepo: transactionRepository, productRepo: productRepository }
+    { transactionRepo: transactionRepository, productRepo: productRepository },
+    reference ? { reference } : undefined
   );
 
   if (!result.success) {

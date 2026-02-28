@@ -37,6 +37,7 @@ export interface TransactionEntity {
   totalInCents: number;
   status: TransactionStatus;
   providerTransactionId: string | null;
+  wompiPaymentLinkId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

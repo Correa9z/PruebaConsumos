@@ -6,6 +6,8 @@ type Step = "list" | "detail" | "modal" | "summary" | "result";
 interface CheckoutState {
   products: Product[];
   config: Config | null;
+  productsLoading: boolean;
+  productsError: string | null;
   selectedProduct: Product | null;
   selectedQuantity: number;
   step: Step;
@@ -15,11 +17,15 @@ interface CheckoutState {
   customerFullName: string;
   paymentSuccess: boolean | null;
   paymentError: string | null;
+  wompiAcceptance: { acceptanceToken: string; acceptPersonalAuth: string } | null;
+  paymentMethodToken: string | null;
 }
 
 const initialState: CheckoutState = {
   products: [],
   config: null,
+  productsLoading: true,
+  productsError: null,
   selectedProduct: null,
   selectedQuantity: 1,
   step: "list",
@@ -29,6 +35,8 @@ const initialState: CheckoutState = {
   customerFullName: "",
   paymentSuccess: null,
   paymentError: null,
+  wompiAcceptance: null,
+  paymentMethodToken: null,
 };
 
 const checkoutSlice = createSlice({
@@ -37,6 +45,15 @@ const checkoutSlice = createSlice({
   reducers: {
     setProducts(state, action: PayloadAction<Product[]>) {
       state.products = action.payload;
+      state.productsLoading = false;
+      state.productsError = null;
+    },
+    setProductsLoading(state, action: PayloadAction<boolean>) {
+      state.productsLoading = action.payload;
+    },
+    setProductsError(state, action: PayloadAction<string | null>) {
+      state.productsError = action.payload;
+      state.productsLoading = false;
     },
     setConfig(state, action: PayloadAction<Config>) {
       state.config = action.payload;
@@ -91,6 +108,15 @@ const checkoutSlice = createSlice({
       state.paymentSuccess = false;
       state.step = "result";
     },
+    setWompiAcceptance(
+      state,
+      action: PayloadAction<{ acceptanceToken: string; acceptPersonalAuth: string } | null>
+    ) {
+      state.wompiAcceptance = action.payload;
+    },
+    setPaymentMethodToken(state, action: PayloadAction<string | null>) {
+      state.paymentMethodToken = action.payload;
+    },
     goToProducts(state) {
       if (state.paymentSuccess && state.selectedProduct && state.selectedQuantity > 0) {
         state.products = state.products.map((p) =>
@@ -104,6 +130,8 @@ const checkoutSlice = createSlice({
       state.selectedQuantity = 1;
       state.paymentSuccess = null;
       state.paymentError = null;
+      state.wompiAcceptance = null;
+      state.paymentMethodToken = null;
     },
   },
 });
@@ -111,6 +139,8 @@ const checkoutSlice = createSlice({
 export const {
   setProducts,
   setConfig,
+  setProductsLoading,
+  setProductsError,
   selectProduct,
   setQuantity,
   openProductDetail,
@@ -124,6 +154,8 @@ export const {
   backToModal,
   setPaymentSuccess,
   setPaymentError,
+  setWompiAcceptance,
+  setPaymentMethodToken,
   goToProducts,
 } = checkoutSlice.actions;
 

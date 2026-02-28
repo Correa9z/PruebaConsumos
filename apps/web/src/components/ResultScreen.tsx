@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
-import { goToProducts } from "@/store";
+import { goToProducts, setProducts } from "@/store";
+import { getProducts } from "@/api/client";
 import "./ResultScreen.css";
 
 export function ResultScreen() {
@@ -9,6 +10,15 @@ export function ResultScreen() {
   );
 
   const success = paymentSuccess === true;
+
+  const handleBack = async () => {
+    try {
+      const list = await getProducts();
+      dispatch(setProducts(list));
+    } finally {
+      dispatch(goToProducts());
+    }
+  };
 
   return (
     <div className="result-overlay" role="dialog" aria-modal="true" aria-labelledby="result-title">
@@ -30,7 +40,7 @@ export function ResultScreen() {
         <button
           type="button"
           className="btn btn--primary result__btn"
-          onClick={() => dispatch(goToProducts())}
+          onClick={handleBack}
         >
           Volver a productos
         </button>
