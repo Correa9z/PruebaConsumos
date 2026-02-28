@@ -1,5 +1,2 @@
-/**
- * Adaptadores: persistencia, clientes externos (placeholder).
- */
-
-export {};
+export * from "./prisma/repositories";
+export * from "./payment/payment-provider";

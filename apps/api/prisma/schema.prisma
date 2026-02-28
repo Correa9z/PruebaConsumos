@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  priceInCents Int     @map("price_in_cents")
+  stock       Int      @default(0)
+  imageUrls   String[] @map("image_urls") // URLs de imágenes del producto (referencias)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  transactions Transaction[]
+}
+
+model Customer {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  fullName   String   @map("full_name")
+  createdAt  DateTime @default(now()) @map("created_at")
+  transactions Transaction[]
+}
+
+model Delivery {
+  id        String   @id @default(cuid())
+  address   String
+  city      String
+  region    String?
+  phone     String
+  postalCode String?  @map("postal_code")
+  createdAt DateTime @default(now()) @map("created_at")
+  transactions Transaction[]
+}
+
+model Transaction {
+  id                 String   @id @default(cuid())
+  transactionNumber  String   @unique @map("transaction_number")
+  productId          String   @map("product_id")
+  product            Product  @relation(fields: [productId], references: [id])
+  customerId         String   @map("customer_id")
+  customer           Customer @relation(fields: [customerId], references: [id])
+  deliveryId         String   @map("delivery_id")
+  delivery           Delivery @relation(fields: [deliveryId], references: [id])
+  quantity           Int      @default(1)
+  amountInCents      Int      @map("amount_in_cents")
+  baseFeeInCents     Int      @map("base_fee_in_cents")
+  deliveryFeeInCents Int      @map("delivery_fee_in_cents")
+  totalInCents       Int      @map("total_in_cents")
+  status             String   @default("PENDING")
+  providerTransactionId String? @map("provider_transaction_id")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+}
