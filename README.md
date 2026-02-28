@@ -119,5 +119,30 @@ Ver **docs/WOMPI_PAYMENT_LINKS_Y_WEBHOOK.md** para:
 
 ### Tests
 
-- Tests unitarios con **Jest** (obligatorio; cobertura >80%). Los resultados se documentan en este README.
-- Por ejecutar: `cd apps/api && pnpm test` / `pnpm test:coverage` cuando estén implementados.
+Los tests unitarios son **obligatorios** (Jest) y la cobertura debe ser **superior al 80%** en frontend y backend.
+
+**Comandos:**
+
+```bash
+# Backend (apps/api)
+cd apps/api && pnpm test           # solo ejecutar tests
+cd apps/api && pnpm test:coverage   # tests + reporte de cobertura
+
+# Frontend (apps/web)
+cd apps/web && pnpm test
+cd apps/web && pnpm test:coverage
+
+# Desde la raíz del monorepo (con pnpm workspaces)
+pnpm --filter api test:coverage
+pnpm --filter web test:coverage
+```
+
+**Resultados de cobertura**
+
+| App | Statements | Branches | Functions | Lines |
+|-----|------------|----------|-----------|-------|
+| **api** | 100% | 100% | 100% | 100% |
+| **web** | 97.63% | 80.88% | 100% | 100% |
+
+- **Backend (api):** Cobertura sobre `src/application` (ROP, use cases: get-products, create-payment, create-payment-link, update-transaction-webhook) y `src/config` (constants). 6 suites, 32 tests.
+- **Frontend (web):** Cobertura sobre `src/utils` (cardValidation), `src/store` (checkout slice), `src/api` (client) y `src/pages/ResultadoPagoPage`. 4 suites, 58 tests. Umbral global ≥80%.
