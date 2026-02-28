@@ -25,10 +25,14 @@ export function generateTransactionNumber(): string {
 }
 
 export function getRedirectBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const u = process.env.FRONTEND_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  return (typeof u === "string" && u.trim()) ? u.trim() : "http://localhost:3000";
 }
 
-/** URL base pública del backend para el redirect_url de Wompi. */
+/** URL base pública del backend para el redirect_url de Wompi. Debe ser absoluta y válida. */
 export function getPaymentRedirectBaseUrl(): string {
-  return process.env.PAYMENT_REDIRECT_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+  const u = process.env.PAYMENT_REDIRECT_URL?.trim();
+  if (u && u.length > 0) return u;
+  const api = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+  return api.trim() || "http://localhost:3001";
 }

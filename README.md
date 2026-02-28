@@ -1,13 +1,13 @@
 # Prueba
 
-Monorepo: **apps/web** (React) y **apps/api** (Next.js). Arquitectura hexagonal en el backend.
+Monorepo: **apps/web** (React) y **apps/api** (NestJS). Arquitectura hexagonal en el backend.
 
 ## Estructura
 
 ```
 prueba/
 ├── apps/
-│   ├── api/        # Backend Next.js – domain, application, infrastructure en src/
+│   ├── api/        # Backend NestJS – domain, application, infrastructure en src/; controladores en src/controllers/
 │   └── web/        # Frontend React (Vite)
 ├── packages/       # (futuro: shared-types, ocr-migration)
 ├── docker/         # Configuración Docker
@@ -37,13 +37,13 @@ pnpm lint
 | App | Puerto | Descripción                |
 |-----|--------|----------------------------|
 | web | 3000   | SPA React (Vite)           |
-| api | 3001   | API Next.js (hexagonal)   |
+| api | 3001   | API NestJS (hexagonal)    |
 
 La web hace proxy de `/api` al backend en desarrollo.
 
-## API (Backend Next.js)
+## API (Backend NestJS)
 
-Arquitectura hexagonal: **domain** (entidades), **application** (puertos y casos de uso con ROP), **infrastructure** (Prisma, adaptador de pagos). La lógica de negocio no está en las rutas; las rutas solo delegan en casos de uso.
+Arquitectura hexagonal: **domain** (entidades), **application** (puertos y casos de uso con ROP), **infrastructure** (Prisma, adaptador de pagos). La lógica de negocio no está en los controladores; los controladores solo delegan en casos de uso.
 
 ### Modelo de datos (PostgreSQL)
 
@@ -70,7 +70,7 @@ Transaction
 
 ```bash
 cd apps/api
-cp .env.example .env   # Completar DATABASE_URL (y opcional PAYMENT_*)
+cp .env.example .env   # Completar DATABASE_URL, FRONTEND_URL, API_URL (y opcional PAYMENT_*)
 pnpm exec prisma migrate deploy   # Aplicar migraciones
 pnpm run db:seed                  # Productos dummy con imágenes
 pnpm dev                          # Genera cliente, aplica migraciones y arranca (puerto 3001)
@@ -95,6 +95,9 @@ Variables de entorno en **apps/api** (copiar desde `.env.example`):
 
 | Variable | Uso |
 |----------|-----|
+| `FRONTEND_URL` | URL del frontend (p. ej. `http://localhost:3000`). Para redirigir tras el pago. |
+| `API_URL` | URL pública del backend (p. ej. `http://localhost:3001`). Para links de pago y webhooks. |
+| `PAYMENT_REDIRECT_URL` | URL pública del backend en local con ngrok (p. ej. `https://xxx.ngrok-free.app`). Obligatoria para redirect de Wompi en desarrollo. |
 | `PAYMENT_BASE_URL` | Base URL de la API Wompi. Producción: `https://production.wompi.co/v1`. Pruebas: `https://sandbox.wompi.co/v1`. |
 | `PAYMENT_PUBLIC_KEY` | Clave pública del comercio (para GET merchants y para que el front tokenice la tarjeta vía config). |
 | `PAYMENT_PRIVATE_KEY` | Clave privada (Bearer) para crear transacciones en Wompi. |
@@ -125,12 +128,12 @@ Los tests unitarios son **obligatorios** (Jest) y la cobertura debe ser **superi
 
 ```bash
 # Backend (apps/api)
-cd apps/api && pnpm test           # solo ejecutar tests
-cd apps/api && pnpm test:coverage   # tests + reporte de cobertura
+cd apps/api; pnpm test             # solo ejecutar tests
+cd apps/api; pnpm test:coverage    # tests + reporte de cobertura
 
 # Frontend (apps/web)
-cd apps/web && pnpm test
-cd apps/web && pnpm test:coverage
+cd apps/web; pnpm test
+cd apps/web; pnpm test:coverage
 
 # Desde la raíz del monorepo (con pnpm workspaces)
 pnpm --filter api test:coverage
@@ -144,5 +147,5 @@ pnpm --filter web test:coverage
 | **api** | 100% | 100% | 100% | 100% |
 | **web** | 97.63% | 80.88% | 100% | 100% |
 
-- **Backend (api):** Cobertura sobre `src/application` (ROP, use cases: get-products, create-payment, create-payment-link, update-transaction-webhook) y `src/config` (constants). 6 suites, 32 tests.
+- **Backend (api):** Cobertura sobre `src/application` (ROP, use cases: get-products, create-payment, create-payment-link, update-transaction-webhook) y `src/config` (constants). Los controladores NestJS en `src/controllers/` están excluidos del reporte. 6 suites, 32 tests.
 - **Frontend (web):** Cobertura sobre `src/utils` (cardValidation), `src/store` (checkout slice), `src/api` (client) y `src/pages/ResultadoPagoPage`. 4 suites, 58 tests. Umbral global ≥80%.

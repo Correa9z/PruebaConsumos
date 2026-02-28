@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { setProducts, setConfig, setProductsLoading, setProductsError, openProductDetail } from "@/store";
+import { setProducts, setConfig, setProductsLoading, setProductsError, openProductDetail, openModal, setQuantity } from "@/store";
 import { getProducts, getConfig } from "@/api/client";
 import { ProductList } from "@/components/ProductList";
 import { ProductDetail } from "@/components/ProductDetail";
@@ -10,9 +10,12 @@ import { ResultScreen } from "@/components/ResultScreen";
 import { ResultadoPagoPage } from "@/pages/ResultadoPagoPage";
 import { useAppSelector } from "@/store/useAppSelector";
 
+const CHECKOUT_PROGRESS_KEY = "checkoutProgress";
+
 function App() {
   const dispatch = useDispatch();
-  const { products, step, productsLoading, productsError } = useAppSelector((s) => s.checkout);
+  const { products, step, productsLoading, productsError, selectedProduct, selectedQuantity } = useAppSelector((s) => s.checkout);
+  const hasRestored = useRef(false);
 
   const isResultadoPago =
     typeof window !== "undefined" &&
@@ -31,6 +34,23 @@ function App() {
         if (!cancelled) {
           dispatch(setProducts(productList));
           dispatch(setConfig(configData));
+          // Restore progress after refresh (resilience)
+          try {
+            const raw = sessionStorage.getItem(CHECKOUT_PROGRESS_KEY);
+            const saved = raw ? (JSON.parse(raw) as { step?: string; productId?: string | null; quantity?: number }) : null;
+            if (saved?.productId && saved.step && saved.step !== "list" && !hasRestored.current) {
+              const product = productList.find((p) => p.id === saved.productId);
+              if (product) {
+                hasRestored.current = true;
+                dispatch(openProductDetail(product));
+                const qty = typeof saved.quantity === "number" && saved.quantity >= 1 ? Math.min(saved.quantity, product.stock, 99) : 1;
+                dispatch(setQuantity(qty));
+                if (saved.step === "modal") dispatch(openModal());
+              }
+            }
+          } catch {
+            // ignore invalid stored data
+          }
         }
       } catch (e) {
         if (!cancelled)
@@ -39,6 +59,21 @@ function App() {
     })();
     return () => { cancelled = true; };
   }, [dispatch, isResultadoPago]);
+
+  // Persist checkout progress for recovery on refresh
+  useEffect(() => {
+    if (isResultadoPago || typeof sessionStorage === "undefined") return;
+    try {
+      const payload = {
+        step,
+        productId: selectedProduct?.id ?? null,
+        quantity: selectedQuantity,
+      };
+      sessionStorage.setItem(CHECKOUT_PROGRESS_KEY, JSON.stringify(payload));
+    } catch {
+      // ignore
+    }
+  }, [step, selectedProduct?.id, selectedQuantity, isResultadoPago]);
 
   // Open product detail when returning from result page with ?productId=xxx
   useEffect(() => {
