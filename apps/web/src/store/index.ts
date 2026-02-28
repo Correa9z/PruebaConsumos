@@ -160,5 +160,6 @@ export const {
 } = checkoutSlice.actions;
 
 export const store = configureStore({ reducer: { checkout: checkoutSlice.reducer } });
+export { checkoutSlice };
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
