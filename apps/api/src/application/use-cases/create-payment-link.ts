@@ -74,7 +74,15 @@ export async function createPaymentLink(
   });
 
   const redirectBase = (deps.getPaymentRedirectBaseUrl ?? deps.getRedirectBaseUrl)();
-  const redirectUrl = `${redirectBase.replace(/\/$/, "")}/api/payments/wompi-redirect`;
+  let redirectUrl = `${redirectBase.replace(/\/$/, "")}/api/payments/wompi-redirect`;
+  try {
+    new URL(redirectUrl);
+  } catch {
+    redirectUrl = "http://localhost:3001/api/payments/wompi-redirect";
+  }
+  if (redirectUrl.length > 2500) {
+    redirectUrl = "http://localhost:3001/api/payments/wompi-redirect";
+  }
 
   const linkResult = await deps.paymentProvider.createPaymentLink({
     name: `Pago ${product.name}`,
