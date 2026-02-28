@@ -1,22 +1,24 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(15, 23, 42, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1001;
   padding: 1rem;
+  animation: overlayIn 0.2s ease;
 }
 
 .backdrop__panel {
   background: var(--card-bg);
-  border-radius: 16px;
+  border-radius: var(--radius-lg, 16px);
   padding: 1.5rem;
   width: 100%;
   max-width: 360px;
   box-shadow: var(--shadow-hover);
   border-top: 3px solid var(--accent);
+  animation: resultIn 0.3s ease;
 }
 
 .backdrop__title {

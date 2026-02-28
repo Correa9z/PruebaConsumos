@@ -28,7 +28,7 @@ describe("api client", () => {
 
   it("getProducts throws on !ok", async () => {
     globalThis.fetch = jest.fn().mockResolvedValue({ ok: false });
-    await expect(getProducts()).rejects.toThrow("Error al cargar productos");
+    await expect(getProducts()).rejects.toThrow("Failed to load products");
   });
 
   it("getConfig returns config on 200", async () => {
@@ -44,7 +44,7 @@ describe("api client", () => {
 
   it("getConfig throws on !ok", async () => {
     globalThis.fetch = jest.fn().mockResolvedValue({ ok: false });
-    await expect(getConfig()).rejects.toThrow("Error al cargar configuración");
+    await expect(getConfig()).rejects.toThrow("Failed to load configuration");
   });
 
   it("getWompiMerchant returns data on 200", async () => {
@@ -68,7 +68,7 @@ describe("api client", () => {
       ok: false,
       json: () => Promise.reject(new Error("parse")),
     });
-    await expect(getWompiMerchant()).rejects.toThrow("Error al cargar aceptación Wompi");
+    await expect(getWompiMerchant()).rejects.toThrow("Failed to load Wompi acceptance");
   });
 
   it("tokenizeCard returns token on 200", async () => {
@@ -119,7 +119,7 @@ describe("api client", () => {
         expYear: "28",
         cardHolder: "Test",
       })
-    ).rejects.toThrow("No se recibió token de tarjeta");
+    ).rejects.toThrow("Card token not received");
   });
 
   it("createPayment returns data on 200", async () => {

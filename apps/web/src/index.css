@@ -1,25 +1,20 @@
 :root {
-  /* Verde como acento principal */
-  --accent: #16a34a;
-  --accent-hover: #15803d;
-  --accent-light: rgba(22, 163, 74, 0.12);
+  --accent: #059669;
+  --accent-hover: #047857;
+  --accent-light: rgba(5, 150, 105, 0.12);
 
-  /* Negro para cabecera y énfasis */
-  --black: #0a0a0a;
-  --black-soft: #171717;
+  --black: #0f172a;
+  --black-soft: #1e293b;
 
-  /* Grises para texto y fondos */
-  --gray-900: #171717;
-  --gray-700: #404040;
-  --gray-500: #737373;
-  --gray-400: #a3a3a3;
-  --gray-200: #e5e5e5;
-  --gray-100: #f5f5f5;
+  --gray-900: #0f172a;
+  --gray-700: #334155;
+  --gray-500: #64748b;
+  --gray-400: #94a3b8;
+  --gray-200: #e2e8f0;
+  --gray-100: #f8fafc;
 
-  /* Blanco */
   --white: #ffffff;
 
-  /* Uso en layout */
   --bg: var(--gray-100);
   --card-bg: var(--white);
   --text-primary: var(--gray-900);
@@ -28,8 +23,11 @@
   --bg-hover: var(--gray-200);
   --input-bg: var(--white);
   --disabled: var(--gray-400);
-  --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-hover: 0 10px 40px rgba(0, 0, 0, 0.12);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --transition: 0.2s ease;
 }
 
 *,
@@ -40,7 +38,7 @@
 
 body {
   margin: 0;
-  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   color: var(--text-primary);
@@ -60,7 +58,7 @@ body {
 .app__header {
   background: var(--black);
   color: var(--white);
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.5rem;
   box-shadow: var(--shadow);
   border-bottom: 3px solid var(--accent);
 }
@@ -70,6 +68,51 @@ body {
   font-size: 1.5rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+.app__loading,
+.app__error {
+  text-align: center;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  animation: fadeIn 0.3s var(--transition);
+}
+
+.app__error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes resultIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .app__main {
@@ -90,4 +133,33 @@ body {
   .app__main {
     padding: 1.5rem;
   }
+}
+
+/* Result page (standalone /resultado-pago) */
+.result-page__main {
+  max-width: 28rem;
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.result-page__loading {
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+}
+
+.result-page__transaction {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.result-page__message {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.result__icon--large {
+  font-size: 3rem;
+  margin-bottom: 1rem;
 }

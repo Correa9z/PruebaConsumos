@@ -20,6 +20,7 @@ import {
   setWompiAcceptance,
   setPaymentMethodToken,
   goToProducts,
+  backToProductDetail,
 } from "../index";
 
 describe("checkout slice", () => {
@@ -171,5 +172,18 @@ describe("checkout slice", () => {
     const next = reducer(withError, goToProducts());
     expect(next.step).toBe("list");
     expect(next.products[0].stock).toBe(10);
+  });
+
+  it("backToProductDetail returns to detail step and clears payment state", () => {
+    const withProduct = reducer(initialState, setProducts([
+      { id: "1", name: "P", description: "", priceInCents: 100, stock: 10, imageUrls: [] },
+    ]));
+    const selected = reducer(withProduct, openProductDetail({ id: "1", name: "P", description: "", priceInCents: 100, stock: 10, imageUrls: [] }));
+    const success = reducer(selected, setPaymentSuccess(true));
+    const next = reducer(success, backToProductDetail());
+    expect(next.step).toBe("detail");
+    expect(next.selectedProduct).not.toBeNull();
+    expect(next.paymentSuccess).toBeNull();
+    expect(next.paymentError).toBeNull();
   });
 });

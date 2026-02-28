@@ -1,9 +1,11 @@
 import { useMemo, useState, useEffect } from "react";
 import { getTransactionStatus } from "@/api/client";
 
+const STORAGE_KEY = "lastPurchasedProductId";
+
 interface ResultadoPagoPageProps {
   searchString: string;
-  onBack: () => void;
+  onBack: (productId?: string) => void;
 }
 
 export function ResultadoPagoPage({ searchString, onBack }: ResultadoPagoPageProps) {
@@ -36,37 +38,47 @@ export function ResultadoPagoPage({ searchString, onBack }: ResultadoPagoPagePro
     return () => { cancelled = true; };
   }, [urlId]);
 
-  // Estado real: el del backend si lo tenemos; si no, el de la URL del redirect
   const status = fetchedStatus ?? urlStatus;
   const success = status === "APPROVED";
   const displayId = transactionNumber ?? urlId ?? undefined;
 
+  const productId = typeof sessionStorage !== "undefined" ? sessionStorage.getItem(STORAGE_KEY) : null;
+
+  const handleBack = () => {
+    if (productId) {
+      sessionStorage.removeItem(STORAGE_KEY);
+      onBack(productId);
+    } else {
+      onBack();
+    }
+  };
+
   return (
     <div className="app">
       <header className="app__header">
-        <h1>Tienda</h1>
+        <h1>Store</h1>
       </header>
-      <main className="app__main" style={{ maxWidth: "28rem", margin: "2rem auto", textAlign: "center" }}>
+      <main className="app__main result-page__main">
         {loading ? (
-          <p style={{ marginBottom: "1rem" }}>Verificando estado del pago…</p>
+          <p className="result-page__loading">Verifying payment status…</p>
         ) : (
           <>
-            <div className={`result__icon ${success ? "result__icon--success" : "result__icon--error"}`} style={{ fontSize: "3rem", marginBottom: "1rem" }}>
+            <div className={`result__icon result__icon--large ${success ? "result__icon--success" : "result__icon--error"}`}>
               {success ? "✓" : "✕"}
             </div>
-            <h2 className="result__title" style={{ marginBottom: "0.5rem" }}>
-              {success ? "¡Pago realizado!" : status ? "Pago rechazado o pendiente" : "Resultado del pago"}
+            <h2 className="result__title">
+              {success ? "Payment successful" : status ? "Payment declined or pending" : "Payment result"}
             </h2>
-            {displayId && <p style={{ color: "var(--gray)", fontSize: "0.9rem" }}>Transacción: {displayId}</p>}
-            <p style={{ marginTop: "1rem", marginBottom: "1.5rem" }}>
+            {displayId && <p className="result-page__transaction">Transaction: {displayId}</p>}
+            <p className="result-page__message">
               {success
-                ? "Tu pago se procesó correctamente. El stock se actualizará en breve."
-                : "Puedes volver a intentar desde el listado de productos."}
+                ? "Your payment was processed successfully. Your order has been confirmed and stock has been updated."
+                : "You can try again from the product page or browse other products."}
             </p>
           </>
         )}
-        <button type="button" className="btn btn--primary" onClick={onBack}>
-          Volver a productos
+        <button type="button" className="btn btn--primary" onClick={handleBack}>
+          {productId ? "Back to product" : "Back to store"}
         </button>
       </main>
     </div>

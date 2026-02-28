@@ -9,59 +9,60 @@ if (!process.env.DATABASE_URL) config({ path: envPathFromRoot });
 
 const prisma = new PrismaClient();
 
-// Imágenes por producto (Unsplash, uso libre). Formato: w=400&h=300&fit=crop
-const img = (id: string) => `https://images.unsplash.com/photo-${id}?w=400&h=300&fit=crop`;
+// Product images: Unsplash (w=400&h=300&fit=crop). Broken IDs replaced with Lorem Flickr (product tags, lock=seed for stability).
+const u = (id: string) => `https://images.unsplash.com/photo-${id}?w=400&h=300&fit=crop`;
+const lf = (tags: string, seed: number) => `https://loremflickr.com/400/300/${tags}?lock=${seed}`;
 
 const PRODUCTS = [
   {
-    name: "Camiseta Básica",
-    description: "Camiseta en algodón 100%, cómoda y fresca. Talla única, corte regular.",
+    name: "Basic T-Shirt",
+    description: "100% cotton t-shirt, comfortable and breathable. One size, regular fit.",
     priceInCents: 2500000,
     stock: 10,
     imageUrls: [
-      img("1603113730470-780cbb2f32ca"), // camiseta blanca
-      img("1521572163474-6864f9cf17ab"), // camiseta
-      img("1622445273715-2f4ec2a1d75a"), // camiseta gris
+      u("1521572163474-6864f9cf17ab"),
+      u("1603113730470-780cbb2f32ca"),
+      lf("tshirt,shirt", 301),
     ],
   },
   {
-    name: "Pantalón Jean",
-    description: "Jean clásico azul de corte recto. Tela resistente y cómoda.",
+    name: "Classic Jeans",
+    description: "Classic blue straight-cut jeans. Durable and comfortable fabric.",
     priceInCents: 8500000,
     stock: 5,
     imageUrls: [
-      img("1541099649105-f68ad6f294f8"), // jeans
-      img("1594938298603-c8148c4dae35"), // jeans detalle
+      lf("jeans,denim", 401),
+      u("1594938298603-c8148c4dae35"),
     ],
   },
   {
-    name: "Zapatos Deportivos",
-    description: "Calzado running ligero, suela antideslizante y amortiguación.",
+    name: "Sports Sneakers",
+    description: "Lightweight running shoes with non-slip sole and cushioning.",
     priceInCents: 12000000,
     stock: 8,
     imageUrls: [
-      img("1542291026-7eec264c27ff"), // sneakers
-      img("1600185365926-3a2ce3cdb9eb"), // zapatilla
-      img("1595950653106-6c9eb79f2e6a"), // tenis
+      u("1542291026-7eec264c27ff"),
+      u("1600185365926-3a2ce3cdb9eb"),
+      lf("sneakers,shoes", 501),
     ],
   },
   {
-    name: "Bolso Tote",
-    description: "Bolso tote en tela resistente, ideal para el día a día.",
+    name: "Tote Bag",
+    description: "Sturdy tote bag, ideal for everyday use.",
     priceInCents: 4500000,
     stock: 12,
     imageUrls: [
-      img("1584917865442-de89df76afd3"), // tote
-      img("1553062407-98eeb64c6a62"),   // bolso
+      u("1584917865442-de89df76afd3"),
+      u("1553062407-98eeb64c6a62"),
     ],
   },
   {
-    name: "Gorra",
-    description: "Gorra ajustable, unicolor. Visera recta y cierre trasero.",
+    name: "Cap",
+    description: "Adjustable cap, solid color. Straight visor and back closure.",
     priceInCents: 1800000,
     stock: 20,
     imageUrls: [
-      img("1588850561407-ed78c282e89b"), // gorra
+      u("1588850561407-ed78c282e89b"),
     ],
   },
 ];

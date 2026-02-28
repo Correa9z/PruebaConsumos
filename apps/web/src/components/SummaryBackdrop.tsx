@@ -35,6 +35,9 @@ export function SummaryBackdrop() {
     if (!canPay) return;
     setLoading(true);
     try {
+      if (typeof sessionStorage !== "undefined" && selectedProduct.id) {
+        sessionStorage.setItem("lastPurchasedProductId", selectedProduct.id);
+      }
       const { paymentLinkUrl } = await createPaymentLink({
         productId: selectedProduct.id,
         quantity: selectedQuantity,
@@ -59,7 +62,7 @@ export function SummaryBackdrop() {
             ? e
             : e && typeof e === "object" && "message" in e
               ? String((e as { message: unknown }).message)
-              : "Error al generar el link de pago";
+              : "Error creating payment link";
       dispatch(setPaymentError(message));
     } finally {
       setLoading(false);
@@ -69,15 +72,15 @@ export function SummaryBackdrop() {
   return (
     <div className="backdrop" role="dialog" aria-modal="true" aria-labelledby="summary-title">
       <div className="backdrop__panel">
-        <h2 id="summary-title" className="backdrop__title">Resumen del pago</h2>
+        <h2 id="summary-title" className="backdrop__title">Payment summary</h2>
         <div className="backdrop__summary">
           <p className="backdrop__line backdrop__product">
-            {selectedProduct.name} {selectedQuantity > 1 && `(×${selectedQuantity})`}: <strong>${(productAmount / 100).toLocaleString("es-CO")} COP</strong>
+            {selectedProduct.name} {selectedQuantity > 1 && `(×${selectedQuantity})`}: <strong>${(productAmount / 100).toLocaleString("en-US")} COP</strong>
           </p>
-          <p className="backdrop__line">Fee base: ${(baseFee / 100).toLocaleString("es-CO")} COP</p>
-          <p className="backdrop__line">Envío: ${(deliveryFee / 100).toLocaleString("es-CO")} COP</p>
+          <p className="backdrop__line">Base fee: ${(baseFee / 100).toLocaleString("en-US")} COP</p>
+          <p className="backdrop__line">Delivery: ${(deliveryFee / 100).toLocaleString("en-US")} COP</p>
           <p className="backdrop__total">
-            Total: <strong>${(total / 100).toLocaleString("es-CO")} COP</strong>
+            Total: <strong>${(total / 100).toLocaleString("en-US")} COP</strong>
           </p>
         </div>
         <div className="backdrop__actions">
@@ -87,7 +90,7 @@ export function SummaryBackdrop() {
             onClick={() => dispatch(backToModal())}
             disabled={loading}
           >
-            Volver
+            Back
           </button>
           <button
             type="button"
@@ -95,7 +98,7 @@ export function SummaryBackdrop() {
             onClick={handlePay}
             disabled={loading || !canPay}
           >
-            {loading ? "Redirigiendo a Wompi..." : canPay ? "Pagar" : "Completa los datos de entrega"}
+            {loading ? "Redirecting to payment…" : canPay ? "Pay" : "Complete delivery details"}
           </button>
         </div>
       </div>
