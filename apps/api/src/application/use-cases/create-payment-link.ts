@@ -9,7 +9,7 @@ import type {
 import type { TransactionEntity, ProductEntity } from "@/domain/entities";
 import { ok, err, type Result } from "../rop";
 
-export interface CreatePaymentInput {
+export interface CreatePaymentLinkInput {
   productId: string;
   quantity: number;
   amountInCents: number;
@@ -18,13 +18,10 @@ export interface CreatePaymentInput {
   customerEmail: string;
   customerFullName: string;
   delivery: CreateDeliveryData;
-  acceptanceToken: string;
-  acceptPersonalAuth?: string;
-  paymentMethodToken: string;
 }
 
-export async function createPayment(
-  input: CreatePaymentInput,
+export async function createPaymentLink(
+  input: CreatePaymentLinkInput,
   deps: {
     productRepo: IProductRepository;
     transactionRepo: ITransactionRepository;
@@ -32,14 +29,24 @@ export async function createPayment(
     deliveryRepo: IDeliveryRepository;
     paymentProvider: IPaymentProvider;
     generateTransactionNumber: () => string;
-    buildSignature: (reference: string, totalCents: number) => string;
-  }
+  getRedirectBaseUrl: () => string;
+  getPaymentRedirectBaseUrl?: () => string;
+}
 ): Promise<
   Result<
-    { transaction: TransactionEntity; product: ProductEntity; providerTransactionId?: string },
+    {
+      transaction: TransactionEntity;
+      product: ProductEntity;
+      paymentLinkUrl: string;
+      transactionNumber: string;
+    },
     string
   >
 > {
+  if (!deps.paymentProvider.createPaymentLink) {
+    return err("Payment links not supported");
+  }
+
   const product = await deps.productRepo.findById(input.productId);
   if (!product) return err("Product not found");
   if (product.stock < input.quantity) return err("Insufficient stock");
@@ -53,7 +60,6 @@ export async function createPayment(
   const transactionNumber = deps.generateTransactionNumber();
   const totalInCents =
     input.amountInCents + input.baseFeeInCents + input.deliveryFeeInCents;
-  const signature = deps.buildSignature(transactionNumber, totalInCents);
 
   const transaction = await deps.transactionRepo.create({
     transactionNumber,
@@ -67,25 +73,26 @@ export async function createPayment(
     totalInCents,
   });
 
-  const paymentResult = await deps.paymentProvider.createTransaction({
-    acceptanceToken: input.acceptanceToken,
-    ...(input.acceptPersonalAuth && { acceptPersonalAuth: input.acceptPersonalAuth }),
+  const redirectBase = (deps.getPaymentRedirectBaseUrl ?? deps.getRedirectBaseUrl)();
+  const redirectUrl = `${redirectBase.replace(/\/$/, "")}/api/payments/wompi-redirect`;
+
+  const linkResult = await deps.paymentProvider.createPaymentLink({
+    name: `Pago ${product.name}`,
+    description: `${product.name} x ${input.quantity} - ${transactionNumber}`,
     amountInCents: totalInCents,
-    customerEmail: input.customerEmail,
-    paymentMethod: { type: "CARD", token: input.paymentMethodToken },
     reference: transactionNumber,
-    signature,
+    redirectUrl,
+    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().replace(/\.\d{3}Z$/, "Z"),
   });
 
-  if (!paymentResult.ok) {
-    return err(paymentResult.error);
-  }
+  if (!linkResult.ok) return err(linkResult.error);
 
-  await deps.transactionRepo.updateProviderId(transaction.id, paymentResult.transactionId);
+  await deps.transactionRepo.updateWompiPaymentLinkId(transaction.id, linkResult.linkId);
 
   return ok({
     transaction,
     product,
-    providerTransactionId: paymentResult.transactionId,
+    paymentLinkUrl: linkResult.paymentLinkUrl,
+    transactionNumber,
   });
 }

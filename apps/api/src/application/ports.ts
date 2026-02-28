@@ -17,6 +17,8 @@ export interface ITransactionRepository {
     providerTransactionId?: string | null
   ): Promise<TransactionEntity>;
   updateProviderId(id: string, providerTransactionId: string): Promise<TransactionEntity>;
+  findByWompiPaymentLinkId(wompiPaymentLinkId: string): Promise<TransactionEntity | null>;
+  updateWompiPaymentLinkId(id: string, wompiPaymentLinkId: string): Promise<TransactionEntity>;
 }
 
 export interface CreateTransactionData {
@@ -49,10 +51,25 @@ export interface CreateDeliveryData {
 
 export interface IPaymentProvider {
   createTransaction(params: PaymentProviderParams): Promise<PaymentProviderResult>;
+  createPaymentLink?(params: PaymentLinkParams): Promise<PaymentLinkResult>;
 }
+
+export interface PaymentLinkParams {
+  name: string;
+  description: string;
+  amountInCents: number;
+  reference: string;
+  redirectUrl: string;
+  expiresAt?: string;
+}
+
+export type PaymentLinkResult =
+  | { ok: true; paymentLinkUrl: string; linkId: string }
+  | { ok: false; error: string };
 
 export interface PaymentProviderParams {
   acceptanceToken: string;
+  acceptPersonalAuth?: string;
   amountInCents: number;
   customerEmail: string;
   paymentMethod: { type: string; token: string; installments?: number };

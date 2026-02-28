@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "concurrently -k -n \"API,WEB\" \"pnpm run dev:api\" \"wait-on http://localhost:3001/api/health -t 30000 && pnpm run dev:web\"",
     "lint": "turbo run lint",
     "clean": "turbo run clean && rm -rf node_modules",
     "dev:api": "pnpm --filter api dev",
@@ -12,7 +12,9 @@
     "db:seed": "pnpm --filter api run db:seed"
   },
   "devDependencies": {
-    "turbo": "^2.3.0"
+    "concurrently": "^9.1.2",
+    "turbo": "^2.3.0",
+    "wait-on": "^8.0.1"
   },
   "packageManager": "pnpm@9.14.2",
   "engines": {

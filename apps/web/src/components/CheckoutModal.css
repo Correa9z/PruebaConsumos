@@ -70,6 +70,23 @@
   color: var(--text-primary);
 }
 
+.modal__hint {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+  line-height: 1.4;
+}
+
+.modal__merchant-error {
+  margin-bottom: 0.75rem;
+}
+
+.modal__loading {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+}
+
 .modal__card-logos {
   display: flex;
   gap: 0.5rem;
@@ -94,6 +111,26 @@
 .card-logo--mc.card-logo--active {
   background: #eb001b;
   color: #fff;
+}
+
+.modal__acceptance {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal__checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.modal__checkbox input {
+  margin-top: 0.2rem;
+  width: auto;
 }
 
 .modal__section label {

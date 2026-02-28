@@ -31,8 +31,9 @@ export function formatCardNumber(value: string): string {
 }
 
 export function formatExpiry(value: string): string {
-  const v = value.replace(/\D/g, "").slice(0, 4);
-  if (v.length >= 2) return v.slice(0, 2) + "/" + v.slice(2);
+  const v = value.replace(/\D/g, "").slice(0, 6);
+  if (v.length === 6) return v.slice(0, 2) + "/" + v.slice(4, 6);
+  if (v.length > 2) return v.slice(0, 2) + "/" + v.slice(2, 4);
   return v;
 }
 

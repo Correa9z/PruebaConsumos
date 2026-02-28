@@ -10,6 +10,8 @@ export interface Product {
 export interface Config {
   baseFeeInCents: number;
   deliveryFeeInCents: number;
+  wompiPublicKey?: string;
+  wompiBaseUrl?: string;
 }
 
 export interface DeliveryInfo {
