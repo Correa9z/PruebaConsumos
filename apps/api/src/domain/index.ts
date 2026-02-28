@@ -1,5 +1,1 @@
-/**
- * Capa de dominio: entidades y value objects (placeholder).
- */
-
-export {};
+export * from "./entities";

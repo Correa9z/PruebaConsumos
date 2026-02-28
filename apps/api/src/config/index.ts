@@ -1,5 +1,1 @@
-/**
- * Configuración de la aplicación (placeholder).
- */
-
-export {};
+export * from "./constants";
